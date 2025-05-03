@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
-const { verifyAccessToken } = require(path.join(__dirname, 'utils', 'tokenUtils'));
+const { verifyAccessToken } = require(path.join(__dirname, '..', 'utils', 'tokenUtils'));
 
 module.exports = (req, res, next) => {
     let token = req.cookies.accessToken;
