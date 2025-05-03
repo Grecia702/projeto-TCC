@@ -1,10 +1,10 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const authRoutes = require(path.join(__dirname, 'Routes', 'authRoutes'));
-const userRoutes = require(path.join(__dirname, 'Routes', 'userRoutes'));
-const accountRoutes = require(path.join(__dirname, 'Routes', 'accountRoutes'));
-const transactionRoutes = require(path.join(__dirname, 'Routes', 'transactionRoutes'));
+const authRoutes = require(path.join(__dirname, 'routes', 'authRoutes'));
+const userRoutes = require(path.join(__dirname, 'routes', 'userRoutes'));
+const accountRoutes = require(path.join(__dirname, 'routes', 'accountRoutes'));
+const transactionRoutes = require(path.join(__dirname, 'routes', 'transactionRoutes'));
 const logger = require(path.join(__dirname, 'utils', 'loggerConfig'));
 const cookieParser = require('cookie-parser');
 const { RateLimiterMemory } = require('rate-limiter-flexible');

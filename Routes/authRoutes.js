@@ -1,10 +1,10 @@
 const express = require("express");
 const path = require("path");
 const router = express.Router();
-const authMiddleware = require(path.join(__dirname, '..', 'middleware', 'authMiddleware'));
-const verifyRefresh = require(path.join(__dirname, '..', 'middleware', 'verifyRefreshToken'));
-const authController = require(path.join(__dirname, '..', 'controller', 'authController'));
-const logger = require(path.join(__dirname, '..', 'utils', 'loggerConfig'));
+const authMiddleware = require('../middleware/authMiddleware');
+const verifyRefresh = require('../middleware/verifyRefreshToken');
+const authController = require('../controller/authController')
+const logger = require('../utils/loggerConfig')
 
 router.post("/login", authController.login);
 router.post("/signup", authController.signup);
