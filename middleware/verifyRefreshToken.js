@@ -2,14 +2,14 @@ require('dotenv').config();
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
+    connectionString: process.env.DATABASE_URL
 });
 
-const { verifyRefreshToken } = require('../utils/tokenUtils');
+pool.connect()
+    .then(() => console.log('Conectado ao banco de dados no Railway'))
+    .catch((err) => console.error('Erro ao conectar ao banco de dados', err));
+
+const { verifyRefreshToken } = require('../Utils/tokenUtils');
 
 module.exports = async (req, res, next) => {
     const authHeader = req.headers.authorization;

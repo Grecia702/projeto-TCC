@@ -1,6 +1,6 @@
 
 const transactionModel = require("../models/transactionModel");
-const { calcularProximaOcorrencia } = require("../utils/calcularOcorrencia")
+const { calcularProximaOcorrencia } = require("../Utils/calcularOcorrencia")
 
 const validarCamposObrigatorios = (dados) => {
     const camposObrigatorios = ['id_contabancaria', 'categoria', 'tipo', 'valor', 'natureza', 'data_transacao'];
