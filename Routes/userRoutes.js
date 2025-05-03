@@ -4,7 +4,7 @@ const userController = require("../Controller/userController");
 const authMiddleware = require('../middleware/authMiddleware');
 const authController = require('../Controller/authController')
 
-const logger = require('../utils/loggerConfig')
+const logger = require('../Utils/loggerConfig')
 
 router.delete("/", authMiddleware, userController.deleteAccount)
 

@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 const bcrypt = require('bcrypt')
 const saltRounds = 12;
 const moment = require('moment');
-const logger = require('../utils/loggerConfig')
+const logger = require('../Utils/loggerConfig')
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL
