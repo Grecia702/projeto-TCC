@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for poupefacil-purple-glade-1310 on 2025-05-03T09:47:46-04:00
+# fly.toml app configuration file generated for poupefacil-purple-glade-1310 on 2025-05-03T10:15:52-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'poupefacil-purple-glade-1310'
-primary_region = 'gru'
+primary_region = 'gig'
 
 [experimental]
   auto_rollback = true
@@ -13,7 +13,15 @@ primary_region = 'gru'
   image = 'node:18'
 
 [env]
-  PORT = '3000'
+  PORT = '8080'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
 [[services]]
   protocol = 'tcp'
@@ -34,4 +42,3 @@ primary_region = 'gru'
 
 [[vm]]
   size = 'shared-cpu-1x'
-  memory = "256mb"
