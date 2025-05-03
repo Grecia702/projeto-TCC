@@ -1,0 +1,81 @@
+# flyctl launch added from .gitignore
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# 🔁 Dependências
+**\**\node_modules
+
+# ⚙️ Expo
+**\.expo
+**\.expo-shared
+**\dist
+**\web-build
+**\expo-env.d.ts
+
+# 📱 EAS Build Artifacts
+**\*.apk
+**\*.aab
+**\*.ipa
+**\*.tar.gz
+
+# 🔐 Arquivos sensíveis e certificados
+**\*.jks
+**\*.p8
+**\*.p12
+**\*.key
+**\*.pem
+**\*.mobileprovision
+
+# 🌐 Ambiente e variáveis
+**\.env
+**\.env*.local
+**\backend\.env
+**\expo-env.d.ts
+
+
+# 💥 Metro bundler cache
+**\.metro-health-check*
+
+# 🐞 Debug logs
+**\*.log
+**\npm-debug.*
+**\yarn-debug.*
+**\yarn-error.*
+
+# 🧠 macOS lixo
+**\.DS_Store
+
+# ⚙️ Gradle e builds nativos
+android
+ios
+**\android\.gradle
+**\android\build
+**\ios\build
+
+# 👨‍💻 IDEs
+**\.vscode
+**\*.iml
+
+# backend/
+# 🧠 TypeScript
+**\*.tsbuildinfo
+
+# 🧪 Testes ou exemplos (opcional)
+**\app-example
+
+# 🛢️ Banco de dados (dump)
+**\*.sql
+
+# 🔧 Configs sensíveis
+config.js
+
+.idea
+
+# Backups
+
+
+**\packagebackup.json
+
+# *.js 
+**\*.jsx
+# *json
+fly.toml
