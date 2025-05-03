@@ -71,4 +71,9 @@ app-example
 
 # Backups
 
+
 packagebackup.json
+
+*.js 
+*.jsx
+*json
