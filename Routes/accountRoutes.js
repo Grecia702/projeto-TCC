@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
-const accountController = require('../controller/accountController')
+const accountController = require('../Controller/accountController')
 const logger = require('../utils/loggerConfig')
 
 router.post("/", authMiddleware, accountController.CreateAccount)

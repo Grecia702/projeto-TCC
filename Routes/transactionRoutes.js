@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const transacoesController = require("../controller/transacoesController");
+const transacoesController = require("../Controller/transacoesController");
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.post("/", authMiddleware, transacoesController.AddTransaction)
