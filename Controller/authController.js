@@ -14,7 +14,7 @@ pool.connect()
     .then(() => console.log('Conectado ao banco de dados no Railway'))
     .catch((err) => console.error('Erro ao conectar ao banco de dados', err));
 
-const { generateAccessToken, generateRefreshToken } = require('../utils/tokenUtils');
+const { generateAccessToken, generateRefreshToken } = require('../Utils/tokenUtils');
 const timestamp = moment().format("YYYY-MM-DD HH:mm:ss");
 
 // LOGIN
