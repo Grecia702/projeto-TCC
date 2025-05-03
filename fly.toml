@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for poupefacil-purple-glade-1310 on 2025-05-03T10:15:52-04:00
+# fly.toml app configuration file generated for poupefacil-purple-glade-1310 on 2025-05-03T10:26:22-04:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -25,7 +25,8 @@ primary_region = 'gig'
 
 [[services]]
   protocol = 'tcp'
-  internal_port = 3000
+  health_check = true
+  internal_port = 8080
 
   [[services.ports]]
     port = 80
