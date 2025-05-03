@@ -2,14 +2,14 @@ console.log('SERVER STARTED - CWD:', process.cwd(), 'DIRNAME:', __dirname)
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const userRoutes = require(path.join(__dirname, 'routes', 'userRoutes'));
-const accountRoutes = require(path.join(__dirname, 'routes', 'accountRoutes'));
-const authRoutes = require(path.join(__dirname, 'routes', 'authRoutes'));
-const transactionRoutes = require(path.join(__dirname, 'routes', 'transactionRoutes'));
-const logger = require(path.join(__dirname, 'utils', 'loggerConfig'));
+const userRoutes = require(path.join(__dirname, 'Routes', 'userRoutes'));
+const accountRoutes = require(path.join(__dirname, 'Routes', 'accountRoutes'));
+const authRoutes = require(path.join(__dirname, 'Routes', 'authRoutes'));
+const transactionRoutes = require(path.join(__dirname, 'Routes', 'transactionRoutes'));
+const logger = require(path.join(__dirname, 'Utils', 'loggerConfig'));
 const cookieParser = require('cookie-parser');
 const { RateLimiterMemory } = require('rate-limiter-flexible');
-const { iniciarCron } = require(path.join(__dirname, 'utils', 'transacoesRecorrentes'));
+const { iniciarCron } = require(path.join(__dirname, 'Utils', 'transacoesRecorrentes'));
 
 iniciarCron();
 
