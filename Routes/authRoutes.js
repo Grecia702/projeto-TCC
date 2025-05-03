@@ -1,29 +1,31 @@
 const express = require("express");
+const path = require("path");
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
-const verifyRefresh = require('../middleware/verifyRefreshToken');
-const authController = require('../controller/authController')
-const logger = require('../utils/loggerConfig')
+const authMiddleware = require(path.join(__dirname, '..', 'middleware', 'authMiddleware'));
+const verifyRefresh = require(path.join(__dirname, '..', 'middleware', 'verifyRefreshToken'));
+const authController = require(path.join(__dirname, '..', 'controller', 'authController'));
+const logger = require(path.join(__dirname, '..', 'utils', 'loggerConfig'));
 
 router.post("/login", authController.login);
 router.post("/signup", authController.signup);
 router.post('/logout', verifyRefresh, authController.logout);
 router.post('/refresh', verifyRefresh, authController.refresh);
+
 router.get("/protected", authMiddleware, (req, res) => {
     let clientIP = req.ip || req.connection.remoteAddress;
     if (clientIP === '::1') {
         clientIP = '127.0.0.1';
     }
-    const agent = req.get('User-Agent')
-    const host = req.get('Host')
-    const ContentType = req.get('Content-Type')
+    const agent = req.get('User-Agent');
+    const host = req.get('Host');
+    const contentType = req.get('Content-Type');
     res.status(200).json({
         message: 'Você está autenticado:',
         clientIP: clientIP,
         userAgent: agent,
         host: host,
-        ContentType: ContentType,
+        contentType: contentType,
     });
 });
 
-module.exports = router
+module.exports = router;
