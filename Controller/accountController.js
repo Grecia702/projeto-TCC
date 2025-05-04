@@ -1,27 +1,36 @@
 const accountModel = require("../models/accountModel");
+const { CreateAccountService,
+    ListAccountService,
+    ListAccountByIDService,
+    RemoveAccountService,
+    UpdateAccountService,
+    ListTransactionsService }
+    = require("../services/accountService")
+
 const moment = require('moment');
 
 const CreateAccount = async (req, res) => {
-    const timestamp = moment().format('YYYY-MM-DD');
-    const { userId } = req.user.decoded
-    const { nome_conta, saldo, tipo_conta, icone, desc_conta } = req.body
     try {
-        if (!nome_conta || !saldo || !tipo_conta) {
-            return res.status(400).json({ message: 'Campos Obrigatórios vazios' })
-        }
-        const ContaExiste = await accountModel.AccountExists(nome_conta, userId)
-        if (ContaExiste) {
-            return res.status(400).json({ message: 'Já existe uma conta com este nome' })
-        }
-        if (!saldo && saldo !== 0) {
-            throw new Error("O campo 'saldo' é obrigatório.");
-        }
-        accountModel.CreateAccount(userId, nome_conta, timestamp, saldo, tipo_conta, icone, desc_conta);
-        return res.status(204).json({ message: 'Conta Cadastrada' })
+        const { userId } = req.user.decoded
+        const dados = req.body
+        await CreateAccountService(dados, userId);
+        return res.sendStatus(204);
     }
-    catch (err) {
-        console.error("Erro ao adicionar a conta: ", err)
-        return res.status(500).json({ message: 'Erro ao adicionar conta', error: err.message })
+    catch (error) {
+        console.error('Erro na criação da conta:', error.message);
+        if (error.message.includes('Campos obrigatórios faltando')) {
+            return res.status(400).json({
+                message: 'Campos obrigatórios em branco',
+                campos_faltando: error.message.split(': ')[1]
+            });
+        }
+        if (error.message === 'Já existe uma conta com este nome') {
+            return res.status(400).json({ message: error.message });
+        }
+        if (error.message === 'O campo saldo deve ser um número') {
+            return res.status(400).json({ message: error.message });
+        }
+        res.status(500).json({ message: 'Erro interno no servidor', error: error.message });
     }
 }
 
@@ -29,13 +38,9 @@ const RemoveAccount = async (req, res) => {
     try {
         const { userId } = req.user.decoded
         const { id } = req.params;
-        const account = await accountModel.FindAccountByID(id, userId)
-        const ContaExiste = account.total > 0
-
-        if (ContaExiste) {
-            await accountModel.DeleteAccount(id, userId)
-            console.log("Conta Exclúida: ", id)
-            return res.status(200).json({ message: 'Conta excluída com sucesso' })
+        const account = await RemoveAccountService(userId, id)
+        if (account) {
+            return res.status(204).json({ message: 'Conta excluída com sucesso' })
         }
         else {
             return res.status(404).json({ message: 'Conta não encontrada' })
@@ -49,32 +54,32 @@ const RemoveAccount = async (req, res) => {
 const ListAccount = async (req, res) => {
     try {
         const { userId } = req.user.decoded
-        const account = await accountModel.ListAllAccounts(userId);
-        return res.json(account.rows)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+        const accounts = await ListAccountService(userId, limit, offset);
+        return res.status(200).json(accounts)
     }
     catch (err) {
-        console.log(err)
-        return res.status(500).json({ message: 'not found' })
+        if (err.message === 'Nenhuma conta encontrada') {
+            return res.status(404).json({ message: err.message });
+        }
+        return res.status(500).json({ message: 'Erro interno no servidor', error: err.message });
     }
 }
 
-const FindAccount = async (req, res) => {
+const FindAccountByID = async (req, res) => {
     try {
         const { userId } = req.user.decoded
         const { id } = req.params
-        const account = await accountModel.FindAccountByID(id, userId);
-        const contaEncontrada = account.total > 0 ? account.firstResult : null
-        if (contaEncontrada) {
-            return res.status(200).json(account.rows)
-        }
-        else {
-            return res.status(404).json({ message: 'Conta não encontrada' })
-        }
-
+        const account = await ListAccountByIDService(id, userId);
+        return res.status(200).json(account)
     }
     catch (err) {
-        console.log(err)
-        return res.status(500).json({ message: 'Erro na requisição', error: err.message })
+        if (err.message === 'Conta não encontrada') {
+            return res.status(404).json({ message: err.message });
+        }
+        return res.status(500).json({ message: 'Erro interno no servidor', error: err.message });
     }
 }
 
@@ -82,19 +87,14 @@ const ListTransactionsByAccount = async (req, res) => {
     try {
         const { userId } = req.user.decoded
         const { id } = req.params
-        const account = await accountModel.ListTransactionsByAccount(id, userId);
-        const contaEncontrada = account.total > 0 ? account.firstResult : null
-        if (contaEncontrada) {
-            return res.status(200).json(account.rows)
-        }
-        else {
-            return res.status(404).json({ message: 'Conta não encontrada' })
-        }
-
+        const transactions = await ListTransactionsService(id, userId);
+        return res.status(200).json(transactions)
     }
     catch (err) {
-        console.log(err)
+        if (err.message === 'Não foi encontrada nenhuma transação para essa conta') {
+            return res.status(404).json({ message: err.message });
+        }
         return res.status(500).json({ message: 'Erro na requisição', error: err.message })
     }
 }
-module.exports = { CreateAccount, RemoveAccount, ListAccount, FindAccount, ListTransactionsByAccount };
+module.exports = { CreateAccount, RemoveAccount, ListAccount, FindAccountByID, ListTransactionsByAccount };

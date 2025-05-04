@@ -64,7 +64,7 @@ app.use((req, res, next) => {
     res.status(404).sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-const PORT = 8080;
+const PORT = 3000;
 const HOST = '0.0.0.0';
 
 app.listen(PORT, HOST, () => {

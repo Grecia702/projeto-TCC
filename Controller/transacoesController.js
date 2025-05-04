@@ -88,8 +88,11 @@ const UpdateTransaction = async (req, res) => {
 
 const ListarTransactions = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
         const { userId } = req.user.decoded
-        const transacoes = await ListTransactionsService(userId);
+        const transacoes = await ListTransactionsService(userId, limit, offset);
         res.json(transacoes);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao conectar com o banco de dados', error: error.message })

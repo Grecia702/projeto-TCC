@@ -1,12 +1,6 @@
 require('dotenv').config();
-const { Pool } = require('pg');
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
-});
+const pool = require('../db.js')
 
-pool.connect()
-    .then(() => console.log('Conectado ao banco de dados no Railway'))
-    .catch((err) => console.error('Erro ao conectar ao banco de dados', err));
 
 const CreateAccount = async (id_usuario, nome_conta, timestamp, saldo, tipo_conta, icone, desc_conta) => {
     const query = `
@@ -17,13 +11,13 @@ const CreateAccount = async (id_usuario, nome_conta, timestamp, saldo, tipo_cont
     await pool.query(query, [id_usuario, nome_conta, timestamp, saldo, tipo_conta, icone, desc_conta]);
 }
 
-const FindAccountByID = async (id, userId) => {
+const FindAccountByID = async (accountId, userId) => {
     const query = `
     SELECT id, nome_conta, saldo, tipo_conta, icone, desc_conta 
     FROM contasBancarias 
     WHERE id = $1 AND id_usuario = $2
     `;
-    const { rows, rowCount } = await pool.query(query, [id, userId]);
+    const { rows, rowCount } = await pool.query(query, [accountId, userId]);
     return { rows, total: rowCount, firstResult: rows[0] };
 }
 
@@ -35,8 +29,8 @@ const DeleteAccount = async (id, userId) => {
     await pool.query("DELETE FROM contasBancarias WHERE id = $1 AND id_usuario = $2", [id, userId])
 }
 
-const ListAllAccounts = async (id) => {
-    const { rows, rowCount } = await pool.query("SELECT * FROM contasBancarias WHERE id_usuario = $1", [id]);
+const ListAllAccounts = async (userId, limit, offset) => {
+    const { rows, rowCount } = await pool.query("SELECT * FROM contasBancarias WHERE id_usuario = $1 ORDER BY data_criacao DESC LIMIT $2 OFFSET $3", [userId, limit, offset]);
     return { rows, total: rowCount, firstResult: rows[0] };
 }
 
