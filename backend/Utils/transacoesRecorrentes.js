@@ -79,7 +79,7 @@ async function processarMetasVencimento() {
 }
 
 function iniciarCron() {
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('0 0 * * *', async () => {
         console.log(`[${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}] Verificando transações recorrentes...`);
         console.log(`[${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}] Verificando metas expiradas...`);
         await Promise.all([

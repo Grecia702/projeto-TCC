@@ -6,6 +6,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.post("/", authMiddleware, goalsController.createGoal)
 router.get("/list", authMiddleware, goalsController.getGoals)
 router.get("/:id", authMiddleware, goalsController.getGoalById)
+router.patch("/saldo/:id", authMiddleware, goalsController.updateSaldo)
 router.patch("/:id", authMiddleware, goalsController.updateGoal)
 router.delete("/:id", authMiddleware, goalsController.deleteGoal)
 

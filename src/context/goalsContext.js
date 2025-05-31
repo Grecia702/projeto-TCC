@@ -11,8 +11,8 @@ const getGoals = async () => {
     return res.data;
 };
 
-const getAllGoals = async () => {
-    const res = await api.get('/goals/list');
+const getAllGoals = async (filters = {}) => {
+    const res = await api.get('/goals/list', { params: filters });
     return res.data;
 };
 
@@ -31,62 +31,75 @@ const deleteGoals = async (id) => {
     return res.data;
 };
 
-export const GoalsProvider = ({ children }) => {
+const addSaldo = async ({ id, ...data }) => {
+    const res = await api.patch(`/goals/saldo/${id}`, data);
+    return res.data;
+};
+
+export const GoalsProvider = ({ children, filters = {} }) => {
     const { isAuthenticated } = useAuth();
     const queryClient = useQueryClient();
-
-    const { data: goalsData, isLoading: isGoalsLoading, refetch: refetchGoals } = useQuery({
-        queryKey: ['goals_id'],
-        queryFn: getGoals,
-        enabled: isAuthenticated,
-        staleTime: 60000,
-        cacheTime: 300000,
-        refetchInterval: 60000,
-        refetchOnWindowFocus: true,
-        refetchOnReconnect: false,
-        retry: false,
-        onSuccess: (response) => {
-            console.log('Dados agrupados no onSuccess:', response.data);
-        },
-        onError: (error) => {
-            console.log('Erro na requisição de dados agrupados:', error);
-        }
-    });
+    const useFilteredGoals = (serializedFilters, filters = {}) => {
+        return useQuery({
+            queryKey: ['goals_id', serializedFilters],
+            queryFn: () => getAllGoals(filters),
+            enabled: isAuthenticated,
+            staleTime: 60000,
+            cacheTime: 300000,
+            refetchInterval: 60000,
+            refetchOnWindowFocus: true,
+            refetchOnReconnect: false,
+            retry: false,
+            onSuccess: (response) => {
+                console.log('Dados agrupados no onSuccess:', response.data);
+            },
+            onError: (error) => {
+                console.log('Erro na requisição de dados agrupados:', error);
+            }
+        });
+    };
 
 
     const createGoalsMutation = useMutation({
         mutationFn: createGoals,
         enabled: isAuthenticated,
         onSuccess: async () => {
-            await queryClient.invalidateQueries(['goals_id']);
+            await queryClient.invalidateQueries({ queryKey: ['goals_id'] });
         },
     });
 
     const updateGoalsMutation = useMutation({
         mutationFn: updateGoals,
         enabled: isAuthenticated,
-        onSuccess: async () => {
-            await queryClient.invalidateQueries(['goals_id']);
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['goals_id'] });
+        },
+    });
+
+    const AddSaldoMutation = useMutation({
+        mutationFn: addSaldo,
+        enabled: isAuthenticated,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['goals_id'] });
         },
     });
 
     const deleteGoalsMutation = useMutation({
         mutationFn: deleteGoals,
         enabled: isAuthenticated,
-        onSuccess: async () => {
-            await queryClient.invalidateQueries(['goals_id']);
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['goals_id'] });
         },
         onError: (error) => console.log(error)
     });
 
     return (
         <GoalsContext.Provider value={{
-            goalsData,
-            isGoalsLoading,
-            refetchGoals,
+            useFilteredGoals,
             createGoalsMutation,
             updateGoalsMutation,
             deleteGoalsMutation,
+            AddSaldoMutation,
         }}>
             {children}
         </GoalsContext.Provider>

@@ -15,7 +15,7 @@ import Logout from '@screens/Logout'
 import Settings from '@screens/Settings'
 import Profile from '@screens/Profile';
 import TopTabRoutes from './top_tabs.routes';
-// import Logout from '@components/Logout'
+import GoalsTabsRoutes from './goals_tabs.routes';
 
 const Drawer = createDrawerNavigator();
 export default function DrawerRoutes() {
@@ -92,10 +92,11 @@ export default function DrawerRoutes() {
                 />
                 <Drawer.Screen
                     name="Metas"
-                    component={Goals}
+                    component={GoalsTabsRoutes}
                     options={{
                         drawerIcon: ({ color, size }) => <MaterialCommunityIcons name="piggy-bank" size={size} color={color} />,
                         drawerLabel: 'Metas',
+                        headerShown: false
                     }}
                 />
                 <Drawer.Screen

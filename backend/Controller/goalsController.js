@@ -3,7 +3,8 @@ const {
     getGoalService,
     getGoalByIdService,
     updateGoalService,
-    deleteGoalService
+    deleteGoalService,
+    updateSaldoService
 } = require("../services/goalsServices")
 
 const createGoal = async (req, res) => {
@@ -58,6 +59,19 @@ const updateGoal = async (req, res) => {
     }
 }
 
+const updateSaldo = async (req, res) => {
+    try {
+        const { saldo } = req.body
+        const { id } = req.params
+        const { userId } = req.user.decoded
+        await updateSaldoService(saldo, userId, id)
+        return res.status(200).json({ message: "Saldo adicionado com sucesso" })
+    } catch (error) {
+
+        res.status(500).json({ message: 'Erro interno no servidor', error: error.message });
+    }
+}
+
 const deleteGoal = async (req, res) => {
     try {
         const { id } = req.params
@@ -72,4 +86,4 @@ const deleteGoal = async (req, res) => {
     }
 }
 
-module.exports = { createGoal, getGoals, getGoalById, updateGoal, deleteGoal }
+module.exports = { createGoal, getGoals, getGoalById, updateGoal, deleteGoal, updateSaldo }

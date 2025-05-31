@@ -7,7 +7,7 @@ import ActionButtons from '@components/actionButtons';
 import CustomInput from '@components/customInput';
 import { useGoalsAuth } from '@context/goalsContext'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { format, startOfDay } from 'date-fns';
+import { format, startOfDay, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const CreateGoals = () => {
@@ -44,19 +44,17 @@ const CreateGoals = () => {
         }
 
         createGoalsMutation.mutate(fields, {
-            onSuccess: () => refetchGoals().then(() => toastSuccess()),
+            onSuccess: () => toastSuccess(),
             onError: (error) => toastError(error),
         });
     };
 
     const toastSuccess = () => {
-        toast.show('Orçamento criado com sucesso', {
+        toast.show('Meta criada com sucesso', {
             type: 'success',
             duration: 2500,
         });
-        setTimeout(() => {
-            navigation.goBack();
-        }, 50);
+        navigation.goBack();
     }
 
     const toastError = (text) => {
@@ -96,7 +94,7 @@ const CreateGoals = () => {
             <CustomInput
                 description={'Data de vencimento*'}
                 type={'date'}
-                value={date}
+                value={addDays(new Date(), 1)}
                 placeholder={format(fields.deadline, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}
                 onPress={() => setShow(true)}
                 required
@@ -106,7 +104,7 @@ const CreateGoals = () => {
                     value={date}
                     mode="date"
                     display="default"
-                    minimumDate={startOfDay(new Date())}
+                    minimumDate={startOfDay(addDays(new Date(), 1))}
                     onChange={onChange}
                 />
             )}

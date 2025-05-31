@@ -33,9 +33,9 @@ export default function GoalsTabsRoutes() {
                 tabBarShowIcon: true,
             })}
         >
-            <Tab.Screen name="Ativos" component={ActiveGoals} />
-            <Tab.Screen name="Parados" component={InactiveGoals} />
-            <Tab.Screen name="Concluídos" component={ConcludedGoals} />
+            <Tab.Screen name="Ativas" component={ActiveGoals} />
+            <Tab.Screen name="Paradas" component={InactiveGoals} />
+            <Tab.Screen name="Concluídas" component={ConcludedGoals} />
         </Tab.Navigator>
     );
 }

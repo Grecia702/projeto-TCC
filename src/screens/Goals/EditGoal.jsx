@@ -1,4 +1,4 @@
-import { StyleSheet, View, Platform, TouchableOpacity, Text } from 'react-native'
+import { StyleSheet, View, Platform } from 'react-native'
 import { colorContext } from '@context/colorScheme';
 import { useContext, useState, useMemo } from 'react'
 import { useToast } from 'react-native-toast-notifications';
@@ -7,22 +7,19 @@ import ActionButtons from '@components/actionButtons';
 import CustomInput from '@components/customInput';
 import { useGoalsAuth } from '@context/goalsContext'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { format, startOfDay } from 'date-fns';
+import { format, startOfDay, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useRoute } from '@react-navigation/native';
-import { useGoals } from '@hooks/useGoals';
+import { useRoute } from '@react-navigation/native'
 
 const CreateGoals = () => {
     const navigation = useNavigation();
     const { isDarkMode } = useContext(colorContext);
     const { updateGoalsMutation } = useGoalsAuth();
     const toast = useToast();
-    const { refetch } = useGoals()
     const [show, setShow] = useState(false);
     const route = useRoute();
     const { id, data } = route.params
     const [formatado, setFormatado] = useState(data.valor_meta.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-    const [descricao, setDescricao] = useState(data.desc_meta)
     const [fields, setFields] = useState({ deadline: data.deadline });
 
     const onChange = (event, selectedDate) => {
@@ -41,7 +38,7 @@ const CreateGoals = () => {
         }
 
         if (fields.desc_meta !== undefined && fields.desc_meta !== '') {
-            if (fields.valor_meta = '') {
+            if (fields.valor_meta === '') {
                 toastError('Preencha os campos obrigatórios');
                 return;
             }
@@ -54,7 +51,7 @@ const CreateGoals = () => {
         }
 
         updateGoalsMutation.mutate(updateData, {
-            onSuccess: () => refetch().then(() => toastSuccess()),
+            onSuccess: () => toastSuccess(),
             onError: (error) => toastError(error),
         });
     };
@@ -62,7 +59,7 @@ const CreateGoals = () => {
     const toastSuccess = () => {
         toast.show('Meta editada com sucesso', {
             type: 'success',
-            duration: 2500,
+            duration: 3500,
         });
         navigation.goBack();
     }
@@ -113,14 +110,14 @@ const CreateGoals = () => {
                     value={new Date(data.deadline)}
                     mode="date"
                     display="default"
-                    minimumDate={startOfDay(new Date())}
+                    minimumDate={startOfDay(addDays(new Date(), 1))}
                     onChange={onChange}
                 />
             )}
             <CustomInput
                 description={'Descrição da meta*'}
                 type={'default'}
-                value={data.desc_meta}
+                value={fields.desc_meta ?? data.desc_meta ?? ''}
                 placeholder={'Ex: Economias para as férias do final do ano'}
                 onChangeText={(text) => setFields({ ...fields, desc_meta: text })}
                 height={100}

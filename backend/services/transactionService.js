@@ -1,7 +1,6 @@
 
 const transactionModel = require("../models/transactionModel");
 const budgetModel = require("../models/budgetModel");
-const goalsModel = require("../models/goalsModel");
 const { calcularProximaOcorrencia } = require("../Utils/calcularOcorrencia")
 const { z } = require('zod');
 const { startOfMonth, subDays, subMonths, endOfMonth } = require('date-fns');
@@ -21,7 +20,6 @@ const transactionQuerySchema = z.object({
     frequencia_recorrencia: z.string().optional(),
     proxima_ocorrencia: z.string().optional(),
     budget_id: z.number().int().optional(),
-    goals_id: z.number().int().optional(),
     data_transacao: z.string().datetime().optional(),
     orderBy: z.enum(['valor', 'data_transacao', 'tipo', 'natureza', 'transaction_id']).default('transaction_id'),
     orderDirection: z.enum(['ASC', 'DESC']).default('DESC'),
@@ -91,13 +89,6 @@ const CreateTransactionService = async (dados, userId) => {
         budget_id = result.id
     }
 
-    const goals = await goalsModel.checkActiveGoal(userId)
-
-    let goals_id = null;
-    if (goals.exists) {
-        goals_id = goals.result.id
-    }
-
     await transactionModel.CreateTransaction(
         dados.id_contabancaria,
         dados.nome_transacao,
@@ -110,7 +101,6 @@ const CreateTransactionService = async (dados, userId) => {
         dados.frequencia_recorrencia,
         dados.proxima_ocorrencia,
         budget_id,
-        goals_id
     );
 };
 

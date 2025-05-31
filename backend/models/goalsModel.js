@@ -12,15 +12,16 @@ const createGoal = async (userId, desc_meta, valor_meta, status_meta, data_inici
 
 const getGoals = async (userId, status_meta) => {
     const query = `
-    SELECT g.id, g.desc_meta, g.valor_meta,
-    (
-        COALESCE(SUM(t.valor) FILTER (WHERE t.tipo = 'receita'), 0)
-    ) AS saldo_meta,
+    SELECT 
+    g.id, 
+    g.desc_meta,
+    g.saldo_meta,
+    g.valor_meta,
+    g.status_meta,
     g.data_inicio,
-    g.deadline,
-    g.data_concluida
+    g.data_concluida,
+    g.deadline
     FROM metas as g	
-    LEFT JOIN transacoes AS t ON t.goals_id = g.id
     WHERE g.id_usuario = $1 
     AND status_meta = $2
     GROUP BY g.id, g.desc_meta, g.valor_meta, g.data_inicio, g.deadline
@@ -32,14 +33,15 @@ const getGoals = async (userId, status_meta) => {
 
 const getGoalById = async (userId, goalId) => {
     const query = `
-    SELECT g.id, g.id_usuario, g.desc_meta, g.valor_meta,
-    (
-        COALESCE(SUM(t.valor) FILTER (WHERE t.tipo = 'receita'), 0) 
-    ) AS saldo_meta,
+    SELECT 
+    g.id, 
+    g.id_usuario, 
+    g.desc_meta, 
+    g.valor_meta,
+    g.saldo_meta,
     g.data_inicio,
     g.deadline
     FROM metas as g	
-    LEFT JOIN transacoes AS t ON t.goals_id = g.id
     WHERE g.id_usuario = $1 AND g.id = $2 
     GROUP BY g.id_usuario, g.id, g.desc_meta, g.valor_meta, g.data_inicio, g.deadline
     `;
@@ -62,8 +64,19 @@ const updateGoal = async (userId, goalId, queryParams) => {
     await pool.query(query, params)
 }
 
-const deleteGoal = async (userId, goalId) => {
+const updateSaldo = async (saldo, userId, goalId) => {
     const query = `
+    UPDATE metas
+    SET saldo_meta = saldo_meta + $1
+    WHERE id_usuario = $2
+    AND id = $3
+    `;
+    await pool.query(query, [saldo, userId, goalId])
+}
+
+
+const deleteGoal = async (userId, goalId) => {
+    const query = ` 
     DELETE FROM metas
     WHERE id_usuario = $1
     AND id = $2
@@ -96,23 +109,16 @@ const checkActiveGoal = async (userId) => {
 
 const totalConcluded = async (userId, status_meta) => {
     const query = `
-SELECT
-  COUNT(*) AS total_ocorrencias,
-  COALESCE(SUM(g.valor_meta), 0) AS total_metas,
-  COALESCE(SUM(t.total_receita), 0) AS total_economizado
-FROM metas g
-LEFT JOIN (
-  SELECT goals_id, SUM(valor) AS total_receita
-  FROM transacoes
-  WHERE tipo = 'receita'
-  GROUP BY goals_id
-) t ON t.goals_id = g.id
- WHERE g.id_usuario = $1
- AND status_meta = $2 
-
+    SELECT
+    COUNT(*) AS total_ocorrencias,
+    COALESCE(SUM(valor_meta), 0) AS total_metas,
+    COALESCE(SUM(saldo_meta), 0) AS total_economizado
+    FROM metas g
+    WHERE g.id_usuario = $1
+    AND status_meta = $2 
     `;
     const { rows } = await pool.query(query, [userId, status_meta])
     return { result: rows[0] }
 }
 
-module.exports = { createGoal, getGoals, getGoalById, updateGoal, deleteGoal, checkExisting, totalConcluded, checkActiveGoal }
+module.exports = { createGoal, getGoals, getGoalById, updateGoal, deleteGoal, updateSaldo, checkExisting, totalConcluded, checkActiveGoal }

@@ -5,8 +5,26 @@ import CustomProgressBar from '@components/customProgressBar'
 import { differenceInDays } from 'date-fns';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Menu } from 'react-native-paper';
+import { format } from 'date-fns';
 
-const Goals = ({ goal_desc, start_date, end_date, current_amount, status_meta, total_amount, showOptions, isVisible, setVisibleId, id, editButton, deleteButton }) => {
+const Goals = ({
+    goal_desc,
+    end_date,
+    complete_date,
+    current_amount,
+    status_meta,
+    total_amount,
+    showOptions,
+    isVisible,
+    setVisibleId,
+    id,
+    addBalanceButton,
+    editButton,
+    deleteButton,
+    archiveButton,
+    completeButton,
+    archiveLabel
+}) => {
     const { isDarkMode } = useContext(colorContext)
     const progress = current_amount / total_amount
     const valor_gasto = current_amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -16,26 +34,17 @@ const Goals = ({ goal_desc, start_date, end_date, current_amount, status_meta, t
     let unfilledColor = '#E0E0E0';
 
     if (status_meta === 'parado') {
-        if (isDarkMode) {
-            color = '#504f4f'
-            unfilledColor = '#7e7e7e'
-        } else {
-            color = '#A0A0A0'
-            unfilledColor = '#E0E0E0'
-        }
+        color = isDarkMode ? '#504f4f' : '#A0A0A0';
+        unfilledColor = isDarkMode ? '#7e7e7e' : '#E0E0E0';
     }
     if (status_meta === 'andamento') {
-        if (isDarkMode) {
-            color = '#034fa1'
-            unfilledColor = '#486b92'
-        } else {
-            color = '#007BFF'
-            unfilledColor = '#B3D7FF'
-        }
+        color = isDarkMode ? '#66BB6A' : '#81C784';
+        unfilledColor = isDarkMode ? '#424242' : '#D6EDD9';
     }
-    if (status_meta === 'concluido') {
-        color = '#81C784'
-        unfilledColor = '#D6EDD9'
+
+    if (status_meta === 'concluida') {
+        color = isDarkMode ? '#034fa1' : '#007BFF';
+        unfilledColor = isDarkMode ? '#486b92' : '#B3D7FF';
     }
 
     const handleToggleDropdown = () => {
@@ -43,7 +52,6 @@ const Goals = ({ goal_desc, start_date, end_date, current_amount, status_meta, t
     };
 
     return (
-
         <View style={styles.container}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignSelf: 'flex-start', width: '100%' }}>
                 <Text style={[styles.title, { color: isDarkMode ? '#cdcecd' : "#303030" }]}>
@@ -54,16 +62,17 @@ const Goals = ({ goal_desc, start_date, end_date, current_amount, status_meta, t
                         visible={isVisible}
                         onDismiss={handleToggleDropdown}
                         anchor={
-
                             <TouchableOpacity onPress={handleToggleDropdown} style={{ marginRight: -13, margin: 0, padding: 0 }}>
                                 <MaterialIcons name="more-vert" size={24} color={isDarkMode ? '#cdcecd' : "#303030"} />
                             </TouchableOpacity>
                         }
                         style={{ marginTop: -80, marginLeft: -10 }}
                     >
+                        {status_meta !== 'concluida' && (<Menu.Item onPress={addBalanceButton} title='Adicionar Saldo' />)}
+                        <Menu.Item onPress={archiveButton} title={archiveLabel || 'Pausar Meta'} />
+                        {status_meta !== 'concluida' && (<Menu.Item onPress={completeButton} title='Concluir Meta' />)}
                         <Menu.Item onPress={editButton} title="Editar" />
                         <Menu.Item onPress={deleteButton} title="Excluir" />
-                        <Menu.Item onPress={() => console.log('Arquivar')} title="Arquivar" />
                     </Menu>
                 )}
             </View>
@@ -80,9 +89,13 @@ const Goals = ({ goal_desc, start_date, end_date, current_amount, status_meta, t
                 </Text>
             </View>
             <Text style={[styles.desc, { color: isDarkMode ? '#cdcecd' : "#303030" }]}>{valor_gasto} de {valor_total}</Text>
-            {(status_meta != 'concluido' || status_meta != 'expirada') && (
+            {status_meta !== 'concluida' ? (
                 <Text style={[styles.title, { marginTop: 16, color: isDarkMode ? '#cdcecd' : "#303030" }]}>
-                    Restam: {deadline} dias
+                    {deadline > 0 ? `Expira em: ${deadline} dias` : `Expira em: menos de um dia`}
+                </Text>
+            ) : (
+                <Text style={[styles.title, { marginTop: 16, color: isDarkMode ? '#cdcecd' : "#303030" }]}>
+                    Concluida em: {format(complete_date, 'dd/MM/yyyy')}
                 </Text>
             )
             }

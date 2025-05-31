@@ -5,7 +5,6 @@ const goalQuerySchema = z.object({
     desc_meta: z.string().min(1),
     valor_meta: z.number().min(0.01),
     status_meta: z.enum(['ativa', 'concluída', 'pausada', 'cancelada']).optional(),
-    // deadline: z.date(),
 })
 
 const createGoalService = async (userId, query) => {
@@ -39,8 +38,12 @@ const getGoalByIdService = async (userId, goalId) => {
     if (!goals.exists) {
         throw new Error('Meta não encontrada')
     }
-    return goals.result
-
+    const data = ({
+        ...goals.result,
+        saldo_meta: parseFloat(goals.result.saldo_meta),
+        valor_meta: parseFloat(goals.result.valor_meta)
+    })
+    return data
 }
 
 const updateGoalService = async (userId, goalId, queryParams) => {
@@ -48,9 +51,17 @@ const updateGoalService = async (userId, goalId, queryParams) => {
     if (!goals.exists) {
         throw new Error('Meta não encontrada')
     }
-
     await goalsModel.updateGoal(userId, goalId, queryParams)
 }
+
+const updateSaldoService = async (saldo, userId, goalId) => {
+    const goals = await goalsModel.checkExisting(userId, goalId)
+    if (!goals.exists) {
+        throw new Error('Meta não encontrada')
+    }
+    await goalsModel.updateSaldo(saldo, userId, goalId)
+}
+
 const deleteGoalService = async (userId, goalId) => {
     const goals = await goalsModel.checkExisting(userId, goalId)
     if (!goals.exists) {
@@ -60,4 +71,4 @@ const deleteGoalService = async (userId, goalId) => {
     await goalsModel.deleteGoal(userId, goalId)
 }
 
-module.exports = { createGoalService, getGoalService, getGoalByIdService, updateGoalService, deleteGoalService }
+module.exports = { createGoalService, getGoalService, getGoalByIdService, updateGoalService, deleteGoalService, updateSaldoService }

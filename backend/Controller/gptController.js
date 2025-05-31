@@ -35,7 +35,6 @@ const promptBasic = async (req, res) => {
                                             "frequencia_recorrencia": diario, semanal, etc...
                                             "proxima_ocorrencia": "timestamp ISO 8601",
                                             "budget_id": null,
-                                            "goals_id": null
                                         }, ...
                                     ]
                                 }   
